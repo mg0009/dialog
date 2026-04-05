@@ -8,21 +8,19 @@ const PORT = process.env.PORT || 3000;
 // -------------------------------
 let SMID = "B55e1f5b3-5e7b-4c6d-9a31-b8f2d6e4c324";
 let CMD = "safe";
+let dialogMessage = "Default Message";
 
 // device store
 let devices = {};
 
 // -------------------------------
-// 🔥 DEVICE PING (TRACKING)
+// 🔥 DEVICE PING
 // -------------------------------
 app.get("/ping", (req, res) => {
   const id = req.query.id;
 
-  if (!id) {
-    return res.send("missing id");
-  }
+  if (!id) return res.send("missing id");
 
-  // ✅ FIX REAL CLIENT IP
   const rawIp = req.headers["x-forwarded-for"];
   const ip = rawIp
     ? rawIp.split(",")[0].trim()
@@ -35,34 +33,36 @@ app.get("/ping", (req, res) => {
     lastSeen: new Date().toLocaleString()
   };
 
-  console.log("Device Updated:", id);
-
   res.send("ok");
 });
 
-// -------------------------------
-// 📊 VIEW DEVICES
 // -------------------------------
 app.get("/devices", (req, res) => {
   res.json(devices);
 });
 
 // -------------------------------
-// 🔥 CLEAN OFFLINE DEVICES (optional)
+// 🔥 DIALOG MESSAGE (IMPORTANT)
 // -------------------------------
-app.get("/clean", (req, res) => {
-  const now = Date.now();
-
-  Object.keys(devices).forEach((id) => {
-    const last = new Date(devices[id].lastSeen).getTime();
-
-    // remove if inactive 2 min
-    if (now - last > 120000) {
-      delete devices[id];
-    }
+app.get("/api/dialog-text", (req, res) => {
+  res.json({
+    message: dialogMessage
   });
+});
 
-  res.send("Cleaned");
+// 🔥 SET MESSAGE FROM BROWSER
+app.get("/set-message", (req, res) => {
+  const value = req.query.value;
+
+  if (!value) {
+    return res.send("Usage: /set-message?value=TEXT");
+  }
+
+  dialogMessage = value;
+
+  console.log("Message updated:", dialogMessage);
+
+  res.send("Updated: " + dialogMessage);
 });
 
 // -------------------------------
@@ -73,48 +73,27 @@ app.get("/cmd", (req, res) => {
 });
 
 app.get("/set-cmd", (req, res) => {
-  const value = req.query.value;
-
-  if (!value) {
-    return res.send("Usage: /set-cmd?value=crash|safe");
-  }
-
-  CMD = value.trim();
-
-  console.log("CMD updated:", CMD);
-
-  res.send("CMD updated: " + CMD);
+  CMD = req.query.value || "safe";
+  res.send("CMD: " + CMD);
 });
 
 // -------------------------------
-// 🔑 SMID CONTROL
+// 🔑 SMID
 // -------------------------------
 app.get("/smid", (req, res) => {
   res.send(SMID);
 });
 
 app.get("/set-smid", (req, res) => {
-  const value = req.query.value;
-
-  if (!value) {
-    return res.send("Usage: /set-smid?value=NEW_SMID");
-  }
-
-  SMID = value;
-
-  console.log("SMID updated:", SMID);
-
-  res.send("Updated SMID: " + SMID);
+  SMID = req.query.value || SMID;
+  res.send("SMID: " + SMID);
 });
 
-// -------------------------------
-// 🏠 ROOT
 // -------------------------------
 app.get("/", (req, res) => {
-  res.send("Server Running 🚀");
+  res.send("Server Running");
 });
 
-// -------------------------------
 app.listen(PORT, () => {
   console.log("Server running on port", PORT);
 });
