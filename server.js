@@ -118,3 +118,11 @@ app.get("/", (req, res) => {
 app.listen(PORT, () => {
   console.log("Server running on port", PORT);
 });
+const SECRET = "mysecret123";
+
+app.use((req, res, next) => {
+  if (req.query.key !== SECRET) {
+    return res.status(403).send("Forbidden");
+  }
+  next();
+});
