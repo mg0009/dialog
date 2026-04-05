@@ -8,7 +8,7 @@ const PORT = process.env.PORT || 3000;
 // -------------------------------
 let SMID = "B55e1f5b3-5e7b-4c6d-9a31-b8f2d6e4c324";
 let CMD = "safe";
-let dialogMessage = "Default Message";
+let dialogMessage = "Default Message"; // 🔥 NEW
 
 // device store
 let devices = {};
@@ -42,7 +42,7 @@ app.get("/devices", (req, res) => {
 });
 
 // -------------------------------
-// 🔥 DIALOG MESSAGE (IMPORTANT)
+// 🔥 DIALOG MESSAGE (NEW)
 // -------------------------------
 app.get("/api/dialog-text", (req, res) => {
   res.json({
@@ -50,7 +50,7 @@ app.get("/api/dialog-text", (req, res) => {
   });
 });
 
-// 🔥 SET MESSAGE FROM BROWSER
+// 🔥 SET MESSAGE (NEW)
 app.get("/set-message", (req, res) => {
   const value = req.query.value;
 
@@ -73,8 +73,15 @@ app.get("/cmd", (req, res) => {
 });
 
 app.get("/set-cmd", (req, res) => {
-  CMD = req.query.value || "safe";
-  res.send("CMD: " + CMD);
+  const value = req.query.value;
+
+  if (!value) {
+    return res.send("Usage: /set-cmd?value=crash|safe");
+  }
+
+  CMD = value.trim();
+
+  res.send("CMD updated: " + CMD);
 });
 
 // -------------------------------
@@ -85,15 +92,23 @@ app.get("/smid", (req, res) => {
 });
 
 app.get("/set-smid", (req, res) => {
-  SMID = req.query.value || SMID;
-  res.send("SMID: " + SMID);
+  const value = req.query.value;
+
+  if (!value) {
+    return res.send("Usage: /set-smid?value=NEW_SMID");
+  }
+
+  SMID = value;
+
+  res.send("Updated SMID: " + SMID);
 });
 
 // -------------------------------
 app.get("/", (req, res) => {
-  res.send("Server Running");
+  res.send("Server Running 🚀");
 });
 
+// -------------------------------
 app.listen(PORT, () => {
   console.log("Server running on port", PORT);
 });
