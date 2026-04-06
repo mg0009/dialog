@@ -6,7 +6,7 @@ const PORT = process.env.PORT || 3000;
 // -------------------------------
 // 🔥 GLOBAL STORAGE
 // -------------------------------
-let SMID = "B55e1f5b3-5e7b-4c6d-9a31-b8f2d6e4c324";
+let SMID = "B58e1f5b3-5e7b-4c6d-9a31-b8f2d6e4c324";
 let CMD = "safe";
 
 // device store
